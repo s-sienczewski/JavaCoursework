@@ -70,8 +70,8 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any race in the
 	 *                                  system.
 	 */
-	String viewRaceDetails(int raceId) throws IDNotRecognisedException;
-
+	String viewRaceDetails(int raceId) throws IDNotRecognisedException; {
+		return name, description, num_stage, total_length;
 	/**
 	 * The method removes the race and all its related information, i.e., stages,
 	 * checkpoints, and results.
