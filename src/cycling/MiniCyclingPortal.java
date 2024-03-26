@@ -71,7 +71,16 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                  system.
 	 */
 	String viewRaceDetails(int raceId) throws IDNotRecognisedException; {
-		return name, description, num_stage, total_length;
+
+		// Check if the race exists in the platform
+		if (!races.containsKey(raceId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Return the details of the race
+		return races.get(raceId).toString();
+
+	}
 	/**
 	 * The method removes the race and all its related information, i.e., stages,
 	 * checkpoints, and results.
@@ -83,7 +92,19 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any race in the
 	 *                                  system.
 	 */
-	void removeRaceById(int raceId) throws IDNotRecognisedException;
+	void removeRaceById(int raceId) throws IDNotRecognisedException; {
+
+		// Check if the race exists in the platform
+		if (!races.containsKey(raceId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Remove the race from the platform
+		races.remove(raceId);
+
+		// Return the details of the race
+		return;
+	}
 
 	/**
 	 * The method queries the number of stages created for a race.
@@ -96,7 +117,16 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any race in the
 	 *                                  system.
 	 */
-	int getNumberOfStages(int raceId) throws IDNotRecognisedException;
+	int getNumberOfStages(int raceId) throws IDNotRecognisedException; {
+
+		// Check if the race exists in the platform
+		if (!races.containsKey(raceId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Return the number of stages created for the race
+		return races.get(raceId).getNumberOfStages();
+	}
 
 	/**
 	 * Creates a new stage and adds it to the race.
@@ -121,7 +151,51 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws InvalidLengthException   If the length is less than 5km.
 	 */
 	int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) 
-			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException;
+			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException; {
+
+		// Check if the race exists in the platform
+		if (!races.containsKey(raceId)) {
+			throw new IDNotRecognisedException;
+		}
+
+		// Check if the race ID is valid
+		if (raceId < 0) {
+			throw new IDNotRecognisedException("Invalid race ID");
+		}
+
+		// Check if the stageName is not null or empty
+		if (stageName == null || stageName.isEmpty()) {
+			throw new IllegalNameException("Stage name cannot be null or empty");
+		}
+
+		// Check if the description is not null
+		if (description == null) {
+			throw new InvalidNameException("Description cannot be null");
+		}
+
+		// Check if the length is valid
+		if (length < 5) {
+			throw new InvalidLengthException("Stage length must be at least 5km");
+		}
+
+		// Check if the startTime is not null
+		if (startTime == null) {
+			throw new IllegalArgumentException("Start time cannot be null");
+		}
+
+		// Check if the type is not null
+		if (type == null) {
+			throw new IllegalArgumentException("Stage type cannot be null");
+		}
+		
+
+		// Create a new stage with the given name and description
+		int stageId = nextStageId++;
+		Stage stage = new Stage(stageId, stageName, description, length, startTime, type);
+		races.get(raceId).addStage(stage);
+		return stageId;
+
+	}
 
 	/**
 	 * Retrieves the list of stage IDs of a race.
@@ -135,7 +209,16 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any race in the
 	 *                                  system.
 	 */
-	int[] getRaceStages(int raceId) throws IDNotRecognisedException;
+	int[] getRaceStages(int raceId) throws IDNotRecognisedException; {
+
+		// Check if the race exists in the platform
+		if (!races.containsKey(raceId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Return the list of stage IDs in the race
+		return races.get(raceId).getStageIds();
+	}
 
 	/**
 	 * Gets the length of a stage in a race, in kilometres.
@@ -148,7 +231,16 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any stage in the
 	 *                                  system.
 	 */
-	double getStageLength(int stageId) throws IDNotRecognisedException;
+	double getStageLength(int stageId) throws IDNotRecognisedException; {
+
+		// Check if the stage exists in the platform
+		if (!stages.containsKey(stageId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Return the length of the stage
+		return stages.get(stageId).getLength();
+	}
 
 	/**
 	 * Removes a stage and all its related data, i.e., checkpoints and results.
@@ -160,7 +252,19 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any stage in the
 	 *                                  system.
 	 */
-	void removeStageById(int stageId) throws IDNotRecognisedException;
+	void removeStageById(int stageId) throws IDNotRecognisedException; {
+
+		// Check if the stage exists in the platform
+		if (!stages.containsKey(stageId)) {
+			throws IDNotRecognisedException;
+		}
+
+		// Remove the stage from the platform
+		stages.remove(stageId);
+
+		// Return the details of the stage
+		return;
+	}
 
 	/**
 	 * Adds a climb checkpoint to a stage.
@@ -187,7 +291,12 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                    checkpoint.
 	 */
 	int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,
-			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException, InvalidStageTypeException;
+			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException, InvalidStageTypeException; {
+
+		// TODO: Implement the method
+		return 0;
+
+	}
 
 	/**
 	 * Adds an intermediate sprint to a stage.
@@ -209,7 +318,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                    checkpoint.
 	 */
 	int addIntermediateSprintToStage(int stageId, double location) throws IDNotRecognisedException,
-			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException;
+			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException; {
+
+		// TODO: Implement the method
+		return 0;
+	}
 
 	/**
 	 * Removes a checkpoint from a stage.
@@ -222,7 +335,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                    the system.
 	 * @throws InvalidStageStateException If the stage is "waiting for results".
 	 */
-	void removeCheckpoint(int checkpointId) throws IDNotRecognisedException, InvalidStageStateException;
+	void removeCheckpoint(int checkpointId) throws IDNotRecognisedException, InvalidStageStateException; {
+
+		// TODO: Implement the method
+
+	}
 
 	/**
 	 * Concludes the preparation of a stage. After conclusion, the stage's state
@@ -236,7 +353,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                    the system.
 	 * @throws InvalidStageStateException If the stage is "waiting for results".
 	 */
-	void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException;
+	void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException; {
+
+		// TODO: Implement the method
+
+	}
 
 	/**
 	 * Retrieves the list of checkpoint (mountains and sprints) IDs of a stage.
@@ -250,7 +371,12 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any stage in the
 	 *                                  system.
 	 */
-	int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException;
+	int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+
+	}
 
 	/**
 	 * Creates a team with name and description.
@@ -265,7 +391,12 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws InvalidNameException If the name is null, empty, has more than 30
 	 *                              characters, or has white spaces.
 	 */
-	int createTeam(String name, String description) throws IllegalNameException, InvalidNameException;
+	int createTeam(String name, String description) throws IllegalNameException, InvalidNameException; {
+
+		// TODO: Implement the method
+		return 0;
+
+	}
 
 	/**
 	 * Removes a team from the system.
@@ -277,7 +408,10 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any team in the
 	 *                                  system.
 	 */
-	void removeTeam(int teamId) throws IDNotRecognisedException;
+	void removeTeam(int teamId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Get the list of teams' IDs in the system.
@@ -289,7 +423,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 *         are no teams in the system.
 	 * 
 	 */
-	int[] getTeams();
+	int[] getTeams(); {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Get the riders of a team.
@@ -302,7 +440,12 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any team in the
 	 *                                  system.
 	 */
-	int[] getTeamRiders(int teamId) throws IDNotRecognisedException;
+	int[] getTeamRiders(int teamId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+
+	}
 
 	/**
 	 * Creates a rider.
@@ -319,7 +462,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IllegalArgumentException If the name of the rider is null or empty,
 	 *                                  or the year of birth is less than 1900.
 	 */
-	int createRider(int teamID, String name, int yearOfBirth) throws IDNotRecognisedException, IllegalArgumentException;
+	int createRider(int teamID, String name, int yearOfBirth) throws IDNotRecognisedException, IllegalArgumentException; {
+
+		// TODO: Implement the method
+		return 0;
+	}
 
 	/**
 	 * Removes a rider from the system. When a rider is removed from the platform,
@@ -332,7 +479,10 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any rider in the
 	 *                                  system.
 	 */
-	void removeRider(int riderId) throws IDNotRecognisedException;
+	void removeRider(int riderId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Record the times of a rider in a stage.
@@ -360,7 +510,10 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                     stage while it is "waiting for results".
 	 */
 	void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpointTimes) 
-			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException, InvalidStageStateException;
+			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException, InvalidStageStateException; {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Get the times of a rider in a stage.
@@ -380,7 +533,12 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any rider or
 	 *                                  stage in the system.
 	 */
-	LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException;
+	LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+
+	}
 
 	/**
 	 * For the general classification, the aggregated time is based on the adjusted
@@ -405,7 +563,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                    stage in the system.
 	 */
 	LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId)
-			throws IDNotRecognisedException;
+			throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Removes the stage results from the rider.
@@ -418,7 +580,10 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match to any rider or
 	 *                                  stage in the system.
 	 */
-	void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException;
+	void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Get the riders finished position in a a stage.
@@ -432,7 +597,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match any stage in the
 	 *                                  system.
 	 */
-	int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException;
+	int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Get the adjusted elapsed times of riders in a stage.
@@ -451,7 +620,11 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match any stage in the
 	 *                                  system.
 	 */
-	LocalTime[] getRankedAdjustedElapsedTimesInStage(int stageId) throws IDNotRecognisedException;
+	LocalTime[] getRankedAdjustedElapsedTimesInStage(int stageId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Get the number of points obtained by each rider in a stage.
@@ -463,11 +636,15 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @return The ranked list of points each riders received in the stage, sorted
 	 *         by their elapsed time. An empty list if there is no result for the
 	 *         stage. These points should match the riders returned by
-	 *         {@link #getRidersRankInStage(int)}.
+	 *         {@link #getRidegetRidersRankInStage(int)}.
 	 * @throws IDNotRecognisedException If the ID does not match any stage in the
 	 *                                  system.
 	 */
-	int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException;
+	int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Get the number of mountain points obtained by each rider in a stage.
@@ -483,13 +660,20 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IDNotRecognisedException If the ID does not match any stage in the
 	 *                                  system.
 	 */
-	int[] getRidersMountainPointsInStage(int stageId) throws IDNotRecognisedException;
+	int[] getRidersMountainPointsInStage(int stageId) throws IDNotRecognisedException; {
+
+		// TODO: Implement the method
+		return null;
+	}
 
 	/**
 	 * Method empties this MiniCyclingPortal of its contents and resets all
 	 * internal counters.
 	 */
-	void eraseCyclingPortal();
+	void eraseCyclingPortal(); {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Method saves this MiniCyclingPortal contents into a serialised file,
@@ -502,7 +686,10 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws IOException If there is a problem experienced when trying to save the
 	 *                     store contents to the file.
 	 */
-	void saveCyclingPortal(String filename) throws IOException;
+	void saveCyclingPortal(String filename) throws IOException; {
+
+		// TODO: Implement the method
+	}
 
 	/**
 	 * Method should load and replace this MiniCyclingPortal contents with the
@@ -517,6 +704,9 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws ClassNotFoundException If required class files cannot be found when
 	 *                                loading.
 	 */
-	void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException;
+	void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException; {
+
+		// TODO: Implement the method
+	}
 
 }
