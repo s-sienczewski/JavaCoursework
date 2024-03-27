@@ -293,6 +293,29 @@ public interface MiniCyclingPortal extends Serializable {
 	int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException, InvalidStageTypeException; {
 
+
+    if (!stageIdExists(stageId)) {
+        throw new IDNotRecognisedException("The stage ID does not match to any stage in the system.");
+    }
+	if (getStageState(stageId) == StageState.WAITING_FOR_RESULTS) {
+        throw new InvalidStageStateException("The stage is waiting for results.");
+    }
+
+    
+    if (getStageType(stageId) == StageType.TIME_TRIAL) {
+        throw new InvalidStageTypeException("Time-trial stages cannot contain any checkpoint.");
+    }
+
+    if (location < 0 || location > getStageLength(stageId)) {
+        throw new InvalidLocationException("The location is out of bounds of the stage length.");
+    }
+
+    
+    int checkpointId = generateCheckpointId();
+    Checkpoint climb = new ClimbCheckpoint(checkpointId, type, location, averageGradient, length);
+    addCheckpointToStage(stageId, climb);
+
+    
 		// TODO: Implement the method
 		return 0;
 
@@ -376,6 +399,19 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws InvalidStageStateException If the stage is "waiting for results".
 	 */
 	void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException; {
+		 if (!stageIdExists(stageId)) {
+        throw new IDNotRecognisedException("The stage ID does not match to any stage in the system.");
+    }
+
+    // Check if the stage is not already in "waiting for results" state
+    StageState stageState = getStageState(stageId);
+    if (stageState == StageState.WAITING_FOR_RESULTS) {
+        throw new InvalidStageStateException("The stage is already in 'waiting for results' state.");
+    }
+
+    // Change the stage state to "waiting for results"
+    setStageState(stageId, StageState.WAITING_FOR_RESULTS);
+}
 
 		// TODO: Implement the method
 
@@ -394,6 +430,32 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                  system.
 	 */
 	int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException; {
+		if (!stageIdExists(stageId)) {
+        throw new IDNotRecognisedException("The stage ID does not match to any stage in the system.");
+    }
+
+    // Get the list of checkpoints for the stage
+    List<Checkpoint> checkpoints = getStageCheckpoints(stageId);
+
+    // Filter the list to only include mountain and sprint checkpoints
+    List<Checkpoint> mountainAndSprintCheckpoints = new ArrayList<>();
+    for (Checkpoint checkpoint : checkpoints) {
+        if (checkpoint instanceof MountainCheckpoint || checkpoint instanceof SprintCheckpoint) {
+            mountainAndSprintCheckpoints.add(checkpoint);
+        }
+    }
+
+    // Sort the list of checkpoints by location
+    mountainAndSprintCheckpoints.sort(Comparator.comparing(checkpoint -> checkpoint.getLocation()));
+
+    // Extract the list of checkpoint IDs
+    int[] checkpointIds = new int[mountainAndSprintCheckpoints.size()];
+    for (int i = 0; i < checkpointIds.length; i++) {
+        checkpointIds[i] = mountainAndSprintCheckpoints.get(i).getId();
+    }
+
+    return checkpointIds;
+}
 
 		// TODO: Implement the method
 		return null;
@@ -414,6 +476,22 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                              characters, or has white spaces.
 	 */
 	int createTeam(String name, String description) throws IllegalNameException, InvalidNameException; {
+		if (name == null || name.isEmpty() || name.length() > 30 || name.contains(" ")) {
+        throw new InvalidNameException("Invalid team name.");
+    }
+
+    // Check if the name already exists in the platform
+    if (teamNameExists(name)) {
+        throw new IllegalNameException("Team name already exists.");
+    }
+
+    // Create the team and get its ID
+    int teamId = generateTeamId();
+    Team team = new Team(teamId, name, description);
+    addTeam(team);
+
+    return teamId;
+}
 
 		// TODO: Implement the method
 		return 0;
@@ -431,6 +509,13 @@ public interface MiniCyclingPortal extends Serializable {
 	 *                                  system.
 	 */
 	void removeTeam(int teamId) throws IDNotRecognisedException; {
+		if (!teamIdExists(teamId)) {
+        throw new IDNotRecognisedException("Team ID not recognized.");
+    }
+
+    // Remove the team from the platform
+    removeTeam(teamId);
+}
 
 		// TODO: Implement the method
 	}
