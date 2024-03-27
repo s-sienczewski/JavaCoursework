@@ -336,6 +336,28 @@ public interface MiniCyclingPortal extends Serializable {
 	 * @throws InvalidStageStateException If the stage is "waiting for results".
 	 */
 	void removeCheckpoint(int checkpointId) throws IDNotRecognisedException, InvalidStageStateException; {
+		// Check that the stage is in the correct state
+    if (stageState == StageState.WAITING_FOR_RESULTS) {
+        throw new InvalidStageStateException("Cannot remove a checkpoint while the stage is waiting for results");
+    }
+
+    // Search for the checkpoint with the given ID
+    Checkpoint checkpoint = null;
+    for (Checkpoint c : checkpoints) {
+        if (c.getId() == checkpointId) {
+            checkpoint = c;
+            break;
+        }
+    }
+
+    // Check if the checkpoint was found
+    if (checkpoint == null) {
+        throw new IDNotRecognisedException("No checkpoint with ID " + checkpointId + " found in the stage");
+    }
+
+    // Remove the checkpoint from the stage
+    checkpoints.remove(checkpoint);
+}
 
 		// TODO: Implement the method
 
